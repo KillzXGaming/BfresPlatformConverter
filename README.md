@@ -6,4 +6,4 @@ Keep in mind BFRES has many signifcant changes between the 2. The most common ch
 Individual games have to have their own conversion handler to change materials. Some games have signifcant changes, some have only minor adjustments.
 
 ## Supported Games
-- Breath Of The Wild
+- Breath of the Wild
