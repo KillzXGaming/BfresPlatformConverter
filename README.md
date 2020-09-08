@@ -16,3 +16,5 @@ Individual games have to have their own conversion handler to change materials. 
 
 ## Development
 For those interesting in adding another game to be supported, all that needs to be done is adding a material handler for the game you are converting from. These presets are done [here](https://github.com/KillzXGaming/BfresLibrary/tree/master/BfresLibrary/PlatformConverters/Presets).
+
+The most common change is render state being turned into render info parameters. Some games may also add new shader options and parameters which needs to be adjusted accordingly.
