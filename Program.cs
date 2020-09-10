@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Threading.Tasks;
+using System.Text;
 using Syroot.NintenTools.Bfres;
 using Syroot.NintenTools.Bfres.WiiU;
 using Syroot.NintenTools.Bfres.PlatformConverters;
 using Syroot.NintenTools.Bfres.TextConvert;
 using EveryFileExplorer;
+using Syroot.BinaryData;
 
 namespace BfresPlatformConverter
 {
@@ -38,10 +39,10 @@ namespace BfresPlatformConverter
                 if (arg.Contains(".Tex2"))
                     continue;
 
-                bool compressed = arg.Contains(".sbfres") || arg.Contains(".szs");
+                bool compressed = IsCompressed(arg);
 
-                ResFile resFile = LoadBFRES(arg);
-                if (arg.Contains(".Tex1"))
+                ResFile resFile = LoadBFRES(arg, compressed);
+                if (arg.Contains(".Tex1") && resFile.Textures.Values.Max(x => x.MipCount > 1))
                 {
                     //Load tex2 mip maps
                     string tex2File = arg.Replace("Tex1", "Tex2");
@@ -50,7 +51,7 @@ namespace BfresPlatformConverter
                         continue;
                     }
 
-                    var resFileTex2 = LoadBFRES(tex2File);
+                    var resFileTex2 = LoadBFRES(tex2File, compressed);
                     foreach (var tex in resFileTex2.Textures.Values) {
                         ((Texture)resFile.Textures[tex.Name]).MipSwizzle = ((Texture)tex).Swizzle;
                         ((Texture)resFile.Textures[tex.Name]).MipData = ((Texture)tex).MipData;
@@ -90,6 +91,18 @@ namespace BfresPlatformConverter
             }
         }
 
+        static bool IsCompressed(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+
+            using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var reader = new BinaryDataReader(fileStream)) {
+                string sig = reader.ReadString(4, Encoding.ASCII);
+                return sig == "Yaz0";
+            }
+        }
+
         static void SaveCompressedResFile(ResFile resFile, string path)
         {
             var mem = new MemoryStream();
@@ -97,9 +110,9 @@ namespace BfresPlatformConverter
             File.WriteAllBytes(path, YAZ0.Compress(mem.ToArray()));
         }
 
-        static ResFile LoadBFRES(string filename)
+        static ResFile LoadBFRES(string filename, bool compressed)
         {
-            if (filename.Contains(".sbfres") || filename.Contains(".szs"))
+            if (compressed)
                 return new ResFile(new MemoryStream(YAZ0.Decompress(filename)));
             else
                 return new ResFile(filename);
