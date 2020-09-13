@@ -1,3 +1,3 @@
-[submodule "BfresLibrary"]
-	path = Syroot.NintenTools.Bfres
+[submodule "Syroot.NintenTools.Bfres"]
+	path = BfresLibrary
 	url = https://github.com/KillzXGaming/BfresLibrary
