@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using Syroot.NintenTools.Bfres;
-using Syroot.NintenTools.Bfres.WiiU;
-using Syroot.NintenTools.Bfres.PlatformConverters;
-using Syroot.NintenTools.Bfres.TextConvert;
+using BfresLibrary;
+using BfresLibrary.WiiU;
+using BfresLibrary.PlatformConverters;
+using BfresLibrary.TextConvert;
 using EveryFileExplorer;
 using Syroot.BinaryData;
 
@@ -69,6 +69,8 @@ namespace BfresPlatformConverter
                 {
                     resFile.ChangePlatform(true, 4096, 0, 5, 0, 3, ConverterHandle.BOTW);
                     resFile.Alignment = 0x0C;
+                    if (arg.Contains(".bcamanim"))
+                        resFile.Alignment = 0x08;
 
                     if (File.Exists(externalShader)) {
                         resFile.ExternalFiles.Add("Turbo_UBER.bfsha", new ExternalFile() { Data = File.ReadAllBytes(externalShader) });
